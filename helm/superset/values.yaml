@@ -50,7 +50,8 @@ image:
 
 service:
   type: NodePort
-  port: 8088
+  port: 80
+  targetPort: 8080
 
 ingress:
   enabled: false
