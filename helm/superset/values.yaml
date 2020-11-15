@@ -145,11 +145,11 @@ init:
     superset init
     echo "Creating admin user..."
     superset fab create-admin \
-                    --username admin \
-                      --firstname Superset \
-                      --lastname Admin \
-                      --email admin@superset.com \
-                      --password admin || true
+                    --username $ADMIN_USERNAME \
+                      --firstname $ADMIN_FIRSTNAME \
+                      --lastname $ADMIN_LASTNAME \
+                      --email $ADMIN_EMAIL \
+                      --password $ADMIN_PASSWORD || true
     {{ if .Values.init.loadExamples }}
     echo "Loading examples..."
     superset load_examples
@@ -258,3 +258,10 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+adminUser:
+  username:
+  firstname:
+  lastname:
+  email:
+  password:
