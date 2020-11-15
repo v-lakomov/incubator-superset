@@ -242,8 +242,8 @@ tolerations: []
 affinity: {}
 
 adminUser:
-  username:
-  firstname:
-  lastname:
-  email:
-  password:
+  username: "admin"
+  firstname: "Superset"
+  lastname: "Admin"
+  email: "admin@superset.com"
+  password: "admin"
