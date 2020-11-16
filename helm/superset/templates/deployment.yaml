@@ -64,7 +64,7 @@ spec:
               readOnly: true
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.service.targetPort }}
               protocol: TCP
           resources:
 {{ toYaml .Values.resources | indent 12 }}
