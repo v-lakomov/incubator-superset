@@ -53,7 +53,7 @@ spec:
           command: {{  tpl (toJson .Values.supersetNode.command) . }}
           env:
             - name: "SUPERSET_PORT"
-              value: {{ .Values.service.port | quote}}
+              value: {{ .Values.service.targetPort | quote}}
           {{ if .Values.extraEnv }}
             {{- range $key, $value := .Values.extraEnv }}
             - name: {{ $key | quote}}
