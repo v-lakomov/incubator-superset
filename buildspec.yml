@@ -1,0 +1,24 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - export TIMESTAMP=$(date +"%Y%m%d%H%M%S")
+      - export TAG=$REPOSITORY_BRANCH-v$TIMESTAMP
+      - $(aws ecr get-login --no-include-email)
+
+  build:
+    commands:
+      - echo Building Superset image
+      - docker build --tag $REPOSITORY_URI:$TAG .
+
+  post_build:
+    commands:
+      - echo Pushing new image to ECR
+      - docker push $REPOSITORY_URI:$TAG
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: '.'
+  discard-paths: no

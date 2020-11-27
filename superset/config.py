@@ -123,9 +123,9 @@ FILTER_SELECT_ROW_LIMIT = 10000
 SUPERSET_WORKERS = 2  # deprecated
 SUPERSET_CELERY_WORKERS = 32  # deprecated
 
-SUPERSET_WEBSERVER_PROTOCOL = "http"
+SUPERSET_WEBSERVER_PROTOCOL = "https"
 SUPERSET_WEBSERVER_ADDRESS = "0.0.0.0"
-SUPERSET_WEBSERVER_PORT = 8088
+SUPERSET_WEBSERVER_PORT = 8080
 
 # This is an important setting, and should be lower than your
 # [load balancer / proxy / envoy / kong / ...] timeout settings.
@@ -184,14 +184,14 @@ SHOW_STACKTRACE = True
 
 # Use all X-Forwarded headers when ENABLE_PROXY_FIX is True.
 # When proxying to a different port, set "x_port" to 0 to avoid downstream issues.
-ENABLE_PROXY_FIX = False
+ENABLE_PROXY_FIX = True
 PROXY_FIX_CONFIG = {"x_for": 1, "x_proto": 1, "x_host": 1, "x_port": 1, "x_prefix": 1}
 
 # ------------------------------
 # GLOBALS FOR APP Builder
 # ------------------------------
 # Uncomment to setup Your App name
-APP_NAME = "Superset"
+APP_NAME = "AZA Analytics"
 
 # Uncomment to setup an App icon
 APP_ICON = "/static/assets/images/superset-logo-horiz.png"
