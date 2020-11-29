@@ -11,6 +11,7 @@ phases:
       - pip3 install --upgrade awscli
       - redis-server --daemonize yes
       - service mysql start
+      - pip3 install tox
 
   pre_build:
     commands:
