@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      python: 3.8
+      python: 3.7
     commands:
       - git config --global pull.rebase false
       - apt-get update
@@ -23,7 +23,7 @@ phases:
       - export TIMESTAMP=$(date +"%Y%m%d%H%M%S")
       - export TAG=$REPOSITORY_BRANCH-v$TIMESTAMP
       - $(aws ecr get-login --no-include-email)
-      - tox -e py38
+      - tox
 
   # build:
   #   commands:
