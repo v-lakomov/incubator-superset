@@ -1,22 +1,38 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+      python: 3.8
+    commands:
+      - git config --global pull.rebase false
+      - apt-get update
+      - apt-get -y install jq python3-pip mysql-server libmysqlclient-dev redis-server 
+      - pip3 install --upgrade awscli
+      - redis-server --daemonize yes
+
   pre_build:
     commands:
+      - mysql -u root -e "DROP DATABASE IF EXISTS superset; CREATE DATABASE superset DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"	
+      - mysql -u root -e "DROP DATABASE IF EXISTS sqllab_test_db; CREATE DATABASE sqllab_test_db DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"	
+      - mysql -u root -e "DROP DATABASE IF EXISTS admin_database; CREATE DATABASE admin_database DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"	
+      - mysql -u root -e "CREATE USER 'mysqluser'@'localhost' IDENTIFIED BY 'mysqluserpassword';"	
+      - mysql -u root -e "GRANT ALL ON *.* TO 'mysqluser'@'localhost';"
       - export TIMESTAMP=$(date +"%Y%m%d%H%M%S")
       - export TAG=$REPOSITORY_BRANCH-v$TIMESTAMP
       - $(aws ecr get-login --no-include-email)
+      - tox -e py38
 
-  build:
-    commands:
-      - echo Building Superset image
-      - docker build --tag $REPOSITORY_URI:$TAG .
+  # build:
+  #   commands:
+  #     - echo Building API image
+  #     - bundle package --all
+  #     - docker build --tag $REPOSITORY_URI:$TAG .
 
-  post_build:
-    commands:
-      - echo Pushing new image to ECR
-      - docker push $REPOSITORY_URI:$TAG
-
+  # post_build:
+  #   commands:
+  #     - echo Pushing new image to ECR
+  #     - docker push $REPOSITORY_URI:$TAG
 artifacts:
   files:
     - '**/*'
