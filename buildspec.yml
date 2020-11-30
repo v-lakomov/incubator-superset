@@ -42,7 +42,6 @@ phases:
       - export TAG=$REPOSITORY_BRANCH-v$TIMESTAMP
       - $(aws ecr get-login --no-include-email)
       - tox
-      - cat /root/.cache/pre-commit/pre-commit.log
 
   # build:
   #   commands:
