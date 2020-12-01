@@ -28,9 +28,11 @@ phases:
     runtime-versions:
       python: 3.8
     commands:
-      - echo "skip"
-      # - git config --global pull.rebase false
-      # - apt-get update
+      - mkdir -p ~/.ssh
+      - echo "$github_ssh_key" > ~/.ssh/id_rsa
+      - chmod 600 ~/.ssh/id_rsa
+      - git config --global pull.rebase false
+      - apt-get update
       # - apt-get -y install jq python3-pip mysql-server libmysqlclient-dev redis-server 
       # - pip3 install --upgrade awscli
       # - redis-server --daemonize yes
@@ -56,33 +58,8 @@ phases:
 
   post_build:
     commands:
-      - | 
-          echo Pushing new image to ECR 
-          docker push $REPOSITORY_URI:$TAG 
-          pushd $PWD
-
-          dir=$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
-
-          mkdir -p tmp
-
-          cd tmp
-
-          echo "Cloning bitpesa Terraform repository"
-          echo "============================================"
-
-          git clone git@github.com:bitpesa/bitpesa-terraform.git || true
-
-          popd
-
-          pushd  $PWD
-          echo "Test"
-          echo "============================================"
-
-          cd tmp/bitpesa-terraform/
-
-          ls
-
-          popd
+      - ./terraform.sh
+      - ls /tmp
 
 artifacts:
   files:
