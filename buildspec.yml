@@ -50,16 +50,15 @@ phases:
       # - mysql -u root -e "DROP DATABASE IF EXISTS admin_database; CREATE DATABASE admin_database DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"	
       # - mysql -u root -e "CREATE USER 'mysqluser'@'localhost' IDENTIFIED BY 'mysqluserpassword';"	
       # - mysql -u root -e "GRANT ALL ON *.* TO 'mysqluser'@'localhost';"
-      # - export TIMESTAMP=$(date +"%Y%m%d%H%M%S")
-      # - export TAG=$REPOSITORY_BRANCH-v$TIMESTAMP
-      # - $(aws ecr get-login --no-include-email)
+      - export TIMESTAMP=$(date +"%Y%m%d%H%M%S")
+      - export TAG=$REPOSITORY_BRANCH-v$TIMESTAMP
+      - $(aws ecr get-login --no-include-email)
       # - tox -e py38
 
   build:
     commands:
       - echo Building superset image
-      # - bundle package --all
-      # - docker build --tag $REPOSITORY_URI:$TAG .
+      - docker build --tag $REPOSITORY_URI:$TAG .
 
   post_build:
     commands:
