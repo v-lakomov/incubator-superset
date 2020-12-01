@@ -33,6 +33,10 @@ phases:
       - chmod 600 ~/.ssh/id_rsa
       - git config --global pull.rebase false
       - apt-get update
+      - "apt install unzip -y"
+      - "wget https://releases.hashicorp.com/terraform/0.13.5/terraform_0.13.5_linux_amd64.zip"
+      - "unzip terraform_0.13.5_linux_amd64.zip"
+      - "mv terraform /usr/local/bin/"
       # - apt-get -y install jq python3-pip mysql-server libmysqlclient-dev redis-server 
       # - pip3 install --upgrade awscli
       # - redis-server --daemonize yes
@@ -52,14 +56,16 @@ phases:
 
   build:
     commands:
-      - echo Building API image
+      - echo Building superset image
       # - bundle package --all
       # - docker build --tag $REPOSITORY_URI:$TAG .
 
   post_build:
     commands:
       - ./terraform.sh
-      - ls /tmp
+      - cd /tmp/bitpesa-terraform/kubernetes/superset/staging
+      - terraform init
+      - terraform plan
 
 artifacts:
   files:
