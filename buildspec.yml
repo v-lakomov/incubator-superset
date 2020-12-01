@@ -22,6 +22,7 @@ env:
   parameter-store:
     github_ssh_key: "github_ssh_key"
     k8s_deployment_slack_notification_sns_topic_arn: "k8s_deployment_slack_notification_sns_topic_arn"
+    staging_kubernetes_cluster_config: "staging_kubernetes_cluster_config"
 
 phases:
   install:
@@ -63,6 +64,8 @@ phases:
   post_build:
     commands:
       - ./terraform.sh
+      - mkdir -p /tmp/bitpesa-terraform/kubernetes/output
+      - echo "$staging_kubernetes_cluster_config" > /tmp/bitpesa-terraform/kubernetes/output/kubeconfig-staging
       - cd /tmp/bitpesa-terraform/kubernetes/superset/staging
       - terraform init
       - terraform plan
