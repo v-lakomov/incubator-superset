@@ -38,22 +38,23 @@ phases:
       - "wget https://releases.hashicorp.com/terraform/0.13.5/terraform_0.13.5_linux_amd64.zip"
       - "unzip terraform_0.13.5_linux_amd64.zip"
       - "mv terraform /usr/local/bin/"
-      # - apt-get -y install jq python3-pip mysql-server libmysqlclient-dev redis-server 
-      # - pip3 install --upgrade awscli
-      # - redis-server --daemonize yes
+      - apt-get -y install jq python3-pip mysql-server libmysqlclient-dev redis-server libsasl2-dev
+      - pip3 install --upgrade awscli
+      - pip3 install tox
+      - redis-server --daemonize yes
+      - service mysql start
 
   pre_build:
     commands:
-      - echo "skip"
-      # - mysql -u root -e "DROP DATABASE IF EXISTS superset; CREATE DATABASE superset DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"	
-      # - mysql -u root -e "DROP DATABASE IF EXISTS sqllab_test_db; CREATE DATABASE sqllab_test_db DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"	
-      # - mysql -u root -e "DROP DATABASE IF EXISTS admin_database; CREATE DATABASE admin_database DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"	
-      # - mysql -u root -e "CREATE USER 'mysqluser'@'localhost' IDENTIFIED BY 'mysqluserpassword';"	
-      # - mysql -u root -e "GRANT ALL ON *.* TO 'mysqluser'@'localhost';"
+      - mysql -u root -e "DROP DATABASE IF EXISTS superset; CREATE DATABASE superset DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"	
+      - mysql -u root -e "DROP DATABASE IF EXISTS sqllab_test_db; CREATE DATABASE sqllab_test_db DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"	
+      - mysql -u root -e "DROP DATABASE IF EXISTS admin_database; CREATE DATABASE admin_database DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"	
+      - mysql -u root -e "CREATE USER 'mysqluser'@'localhost' IDENTIFIED BY 'mysqluserpassword';"	
+      - mysql -u root -e "GRANT ALL ON *.* TO 'mysqluser'@'localhost';"
       - export TIMESTAMP=$(date +"%Y%m%d%H%M%S")
       - export TAG=$REPOSITORY_BRANCH-v$TIMESTAMP
       - $(aws ecr get-login --no-include-email)
-      # - tox -e py38
+      - tox
 
   build:
     commands:
@@ -62,6 +63,7 @@ phases:
 
   post_build:
     commands:
+      - docker push $REPOSITORY_URI:$TAG
       - ./terraform.sh
       - mkdir -p /tmp/bitpesa-terraform/kubernetes/output
       - echo "$staging_kubernetes_cluster_config" > /tmp/bitpesa-terraform/kubernetes/output/kubeconfig-staging
