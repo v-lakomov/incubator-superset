@@ -1,58 +1,71 @@
-
-#	
-# Licensed to the Apache Software Foundation (ASF) under one or more	
-# contributor license agreements.  See the NOTICE file distributed with	
-# this work for additional information regarding copyright ownership.	
-# The ASF licenses this file to You under the Apache License, Version 2.0	
-# (the "License"); you may not use this file except in compliance with	
-# the License.  You may obtain a copy of the License at	
-#	
-#    http://www.apache.org/licenses/LICENSE-2.0	
-#	
-# Unless required by applicable law or agreed to in writing, software	
-# distributed under the License is distributed on an "AS IS" BASIS,	
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.	
-# See the License for the specific language governing permissions and	
-# limitations under the License.	
-#
-
 version: 0.2
+
+env:
+  parameter-store:
+    github_ssh_key: "github_ssh_key"
+    k8s_deployment_slack_notification_sns_topic_arn: "k8s_deployment_slack_notification_sns_topic_arn"
 
 phases:
   install:
     runtime-versions:
       python: 3.8
     commands:
-      - git config --global pull.rebase false
-      - apt-get update
-      - apt-get -y install jq python3-pip mysql-server libmysqlclient-dev redis-server libsasl2-dev
-      - pip3 install --upgrade awscli
-      - redis-server --daemonize yes
-      - service mysql start
-      - pip3 install tox
+      - echo "skip"
+      # - git config --global pull.rebase false
+      # - apt-get update
+      # - apt-get -y install jq python3-pip mysql-server libmysqlclient-dev redis-server 
+      # - pip3 install --upgrade awscli
+      # - redis-server --daemonize yes
 
   pre_build:
     commands:
-      - mysql -u root -e "DROP DATABASE IF EXISTS superset; CREATE DATABASE superset DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"	
-      - mysql -u root -e "DROP DATABASE IF EXISTS sqllab_test_db; CREATE DATABASE sqllab_test_db DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"	
-      - mysql -u root -e "DROP DATABASE IF EXISTS admin_database; CREATE DATABASE admin_database DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"	
-      - mysql -u root -e "CREATE USER 'mysqluser'@'localhost' IDENTIFIED BY 'mysqluserpassword';"	
-      - mysql -u root -e "GRANT ALL ON *.* TO 'mysqluser'@'localhost';"
-      - export TIMESTAMP=$(date +"%Y%m%d%H%M%S")
-      - export TAG=$REPOSITORY_BRANCH-v$TIMESTAMP
-      - $(aws ecr get-login --no-include-email)
-      - tox
+      - echo "skip"
+      # - mysql -u root -e "DROP DATABASE IF EXISTS superset; CREATE DATABASE superset DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"	
+      # - mysql -u root -e "DROP DATABASE IF EXISTS sqllab_test_db; CREATE DATABASE sqllab_test_db DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"	
+      # - mysql -u root -e "DROP DATABASE IF EXISTS admin_database; CREATE DATABASE admin_database DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci"	
+      # - mysql -u root -e "CREATE USER 'mysqluser'@'localhost' IDENTIFIED BY 'mysqluserpassword';"	
+      # - mysql -u root -e "GRANT ALL ON *.* TO 'mysqluser'@'localhost';"
+      # - export TIMESTAMP=$(date +"%Y%m%d%H%M%S")
+      # - export TAG=$REPOSITORY_BRANCH-v$TIMESTAMP
+      # - $(aws ecr get-login --no-include-email)
+      # - tox -e py38
 
-  # build:
-  #   commands:
-  #     - echo Building API image
-  #     - bundle package --all
-  #     - docker build --tag $REPOSITORY_URI:$TAG .
+  build:
+    commands:
+      - echo Building API image
+      # - bundle package --all
+      # - docker build --tag $REPOSITORY_URI:$TAG .
 
-  # post_build:
-  #   commands:
-  #     - echo Pushing new image to ECR
-  #     - docker push $REPOSITORY_URI:$TAG
+  post_build:
+    commands:
+      - | 
+          echo Pushing new image to ECR 
+          docker push $REPOSITORY_URI:$TAG 
+          pushd $PWD
+
+          dir=$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
+
+          mkdir -p tmp
+
+          cd tmp
+
+          echo "Cloning bitpesa Terraform repository"
+          echo "============================================"
+
+          git clone git@github.com:bitpesa/bitpesa-terraform.git || true
+
+          popd
+
+          pushd  $PWD
+          echo "Test"
+          echo "============================================"
+
+          cd tmp/bitpesa-terraform/
+
+          ls
+
+          popd
+
 artifacts:
   files:
     - '**/*'
